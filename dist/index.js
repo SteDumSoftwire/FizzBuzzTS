@@ -33,6 +33,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const readline = __importStar(require("readline"));
+let flags = new Array(20).fill(false);
+let wordDict = {};
+let outputArray = [];
+function populateDict() {
+    wordDict[3] = 'Fizz';
+    wordDict[5] = 'Buzz';
+    wordDict[7] = 'Bang';
+    wordDict[11] = 'Bong';
+    wordDict[13] = 'Fezz';
+}
+function check(numberToCheck, ruleNumber, flags, outputArray) {
+    if (numberToCheck % ruleNumber == 0 && flags[ruleNumber]) {
+        outputArray.push(wordDict[ruleNumber]);
+    }
+}
 function readInput(question) {
     const rl = readline.createInterface({
         input: process.stdin,
@@ -44,51 +59,58 @@ function readInput(question) {
         resolve(convertToNumber);
     }));
 }
+function getFlags() {
+    let args = process.argv.slice(2);
+    console.log(args);
+    for (let arg of args) {
+        flags[Number(arg)] = true;
+    }
+}
 function count() {
     return __awaiter(this, void 0, void 0, function* () {
         let i = 1;
         let n = yield readInput("Input Number: ");
         for (i = 1; i <= n; i++) {
-            if (i % 13 && i % 11 && i % 7 && i % 5 && i % 3) {
-                console.log(i);
+            outputArray = [];
+            if (i % 11 == 0 && flags[11]) {
+                check(i, 11, flags, outputArray);
                 continue;
             }
-            if (i % 11 == 0) {
-                console.log("Bong");
+            if (i % 17 == 0 && flags[17]) {
+                reverseOutput(true, i, flags);
             }
             else {
-                if (i % 17 == 0) {
-                    if (i % 7 == 0) {
-                        process.stdout.write("Bang");
-                    }
-                    if (i % 5 == 0) {
-                        process.stdout.write("Buzz");
-                    }
-                    if (i % 13 == 0) {
-                        process.stdout.write("Fezz");
-                    }
-                    if (i % 3 == 0) {
-                        process.stdout.write("Fizz");
-                    }
-                }
-                else {
-                    if (i % 3 == 0) {
-                        process.stdout.write("Fizz");
-                    }
-                    if (i % 13 == 0) {
-                        process.stdout.write("Fezz");
-                    }
-                    if (i % 5 == 0) {
-                        process.stdout.write("Buzz");
-                    }
-                    if (i % 7 == 0) {
-                        process.stdout.write("Bang");
-                    }
-                }
-                process.stdout.write("\n");
+                reverseOutput(false, i, flags);
             }
         }
     });
 }
+function reverseOutput(isReveresed, numberToCheck, flags) {
+    if (isReveresed) {
+        check(numberToCheck, 7, flags, outputArray);
+        check(numberToCheck, 5, flags, outputArray);
+        check(numberToCheck, 13, flags, outputArray);
+        check(numberToCheck, 3, flags, outputArray);
+        print(outputArray, numberToCheck);
+        return;
+    }
+    check(numberToCheck, 3, flags, outputArray);
+    check(numberToCheck, 13, flags, outputArray);
+    check(numberToCheck, 5, flags, outputArray);
+    check(numberToCheck, 7, flags, outputArray);
+    print(outputArray, numberToCheck);
+}
+function print(output, numberToCheck) {
+    if (output.length == 0) {
+        console.log(numberToCheck);
+        return;
+    }
+    for (let el of output) {
+        process.stdout.write(el);
+    }
+    process.stdout.write('\n');
+}
+populateDict();
+getFlags();
 count();
 //# sourceMappingURL=index.js.map
